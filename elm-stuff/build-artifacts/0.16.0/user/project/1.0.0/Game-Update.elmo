@@ -1,0 +1,53 @@
+Elm.Game = Elm.Game || {};
+Elm.Game.Update = Elm.Game.Update || {};
+Elm.Game.Update.make = function (_elm) {
+   "use strict";
+   _elm.Game = _elm.Game || {};
+   _elm.Game.Update = _elm.Game.Update || {};
+   if (_elm.Game.Update.values) return _elm.Game.Update.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Collision2D = Elm.Collision2D.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Game$Input = Elm.Game.Input.make(_elm),
+   $Game$Model = Elm.Game.Model.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var _op = {};
+   var correctCollisions = F3(function (game,oldY,player) {
+      return A2($Collision2D.axisAlignedBoundingBox,player.rect,game.ground.rect) ? _U.update(player,{y: oldY,grounded: true}) : _U.update(player,
+      {y: player.y,grounded: false});
+   });
+   var collisionUpdate = function (player) {    return _U.update(player,{rect: A4($Collision2D.rectangle,player.x,player.y,32,32)});};
+   var physicsUpdate = F2(function (dt,obj) {    return _U.update(obj,{x: obj.x + obj.vx * dt,y: obj.y + obj.vy * dt});});
+   var jumpUpdate = F2(function (keys,player) {
+      return _U.cmp(keys.y,0) > 0 && _U.eq(player.grounded,true) ? _U.update(player,{vy: 10.0,grounded: false}) : player;
+   });
+   var walkUpdate = F2(function (keys,player) {
+      return _U.update(player,
+      {vx: 5 * $Basics.toFloat(keys.x),dir: _U.cmp(keys.x,0) < 0 ? $Game$Model.Left : _U.cmp(keys.x,0) > 0 ? $Game$Model.Right : player.dir});
+   });
+   var gravityUpdate = F2(function (dt,player) {    return _U.update(player,{vy: _U.eq(player.grounded,true) ? 0 : player.vy - dt / 2});});
+   var updatePlayer = F4(function (dt,keys,player,game) {
+      var oldY = player.y;
+      var oldX = player.x;
+      return A3(correctCollisions,game,oldY,collisionUpdate(A2(physicsUpdate,dt,A2(jumpUpdate,keys,A2(walkUpdate,keys,A2(gravityUpdate,dt,player))))));
+   });
+   var update = F2(function (_p0,game) {
+      var _p1 = _p0;
+      var newState = $Game$Model.Play;
+      return _U.update(game,{state: newState,player: A4(updatePlayer,_p1._0,_p1._1,game.player,game)});
+   });
+   return _elm.Game.Update.values = {_op: _op
+                                    ,update: update
+                                    ,updatePlayer: updatePlayer
+                                    ,gravityUpdate: gravityUpdate
+                                    ,walkUpdate: walkUpdate
+                                    ,jumpUpdate: jumpUpdate
+                                    ,physicsUpdate: physicsUpdate
+                                    ,collisionUpdate: collisionUpdate
+                                    ,correctCollisions: correctCollisions};
+};

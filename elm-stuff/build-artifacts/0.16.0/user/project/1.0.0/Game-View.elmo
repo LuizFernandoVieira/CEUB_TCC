@@ -1,0 +1,43 @@
+Elm.Game = Elm.Game || {};
+Elm.Game.View = Elm.Game.View || {};
+Elm.Game.View.make = function (_elm) {
+   "use strict";
+   _elm.Game = _elm.Game || {};
+   _elm.Game.View = _elm.Game.View || {};
+   if (_elm.Game.View.values) return _elm.Game.View.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Game$Model = Elm.Game.Model.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var _op = {};
+   var view = F2(function (_p0,game) {
+      var _p1 = _p0;
+      var _p5 = _p1._0;
+      var _p4 = _p1._1;
+      var groundSrc = "img/ground.png";
+      var groundImage = A3($Graphics$Element.image,32,32,groundSrc);
+      var playerSrc = "img/playerstandleft.png";
+      var playerImage = A3($Graphics$Element.image,32,32,playerSrc);
+      var player = game.player;
+      var verb = _U.cmp(player.vx,0) > 0 ? "walk" : "stand";
+      var dir = function () {    var _p2 = player.dir;if (_p2.ctor === "Left") {    return "left";} else {    return "right";}}();
+      var position = {ctor: "_Tuple2",_0: player.x,_1: player.y};
+      var _p3 = {ctor: "_Tuple2",_0: $Basics.toFloat(_p5),_1: $Basics.toFloat(_p4)};
+      var w = _p3._0;
+      var h = _p3._1;
+      return A3($Graphics$Collage.collage,
+      _p5,
+      _p4,
+      _U.list([A2($Graphics$Collage.filled,A3($Color.rgb,174,238,238),A2($Graphics$Collage.rect,w,h))
+              ,A2($Graphics$Collage.move,position,$Graphics$Collage.toForm(playerImage))
+              ,$Graphics$Collage.toForm(groundImage)]));
+   });
+   return _elm.Game.View.values = {_op: _op,view: view};
+};

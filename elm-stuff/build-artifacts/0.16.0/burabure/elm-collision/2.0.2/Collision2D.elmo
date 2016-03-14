@@ -1,0 +1,68 @@
+Elm.Collision2D = Elm.Collision2D || {};
+Elm.Collision2D.make = function (_elm) {
+   "use strict";
+   _elm.Collision2D = _elm.Collision2D || {};
+   if (_elm.Collision2D.values) return _elm.Collision2D.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var _op = {};
+   var Left = {ctor: "Left"};
+   var Bottom = {ctor: "Bottom"};
+   var Right = {ctor: "Right"};
+   var Top = {ctor: "Top"};
+   var rectangleSide = F2(function (_p1,_p0) {
+      var _p2 = _p1;
+      var _p5 = _p2._0;
+      var _p3 = _p0;
+      var _p4 = _p3._0;
+      var dy = _p4.cy - _p5.cy;
+      var dx = _p4.cx - _p5.cx;
+      var h = 0.5 * (_p5.h + _p4.h);
+      var hx = h * dx;
+      var w = 0.5 * (_p5.w + _p4.w);
+      var wy = w * dy;
+      return _U.cmp($Basics.abs(dx),w) < 1 && _U.cmp($Basics.abs(dy),h) < 1 ? _U.cmp(wy,hx) > 0 ? _U.cmp(wy,
+      0 - hx) > 0 ? $Maybe.Just(Top) : $Maybe.Just(Left) : _U.cmp(wy,0 - hx) > 0 ? $Maybe.Just(Right) : $Maybe.Just(Bottom) : $Maybe.Nothing;
+   });
+   var circleToCircle = F2(function (_p7,_p6) {
+      var _p8 = _p7;
+      var _p11 = _p8._0;
+      var _p9 = _p6;
+      var _p10 = _p9._0;
+      var dy = _p11.cy - _p10.cy;
+      var dx = _p11.cx - _p10.cx;
+      var distance = $Basics.sqrt(dx * dx + dy * dy);
+      return _U.cmp(distance,_p11.radius + _p10.radius) < 0 ? true : false;
+   });
+   var axisAlignedBoundingBox = F2(function (_p13,_p12) {
+      var _p14 = _p13;
+      var _p17 = _p14._0;
+      var _p15 = _p12;
+      var _p16 = _p15._0;
+      var startingPoint = F2(function (centerPoint,length) {    return centerPoint - length / 2;});
+      var x1 = A2(startingPoint,_p17.cx,_p17.w);
+      var x2 = A2(startingPoint,_p16.cx,_p16.w);
+      var y1 = A2(startingPoint,_p17.cy,_p17.h);
+      var y2 = A2(startingPoint,_p16.cy,_p16.h);
+      return _U.cmp(x1,x2 + _p16.w) < 0 && (_U.cmp(x1 + _p17.w,x2) > 0 && (_U.cmp(y1,y2 + _p16.h) < 0 && _U.cmp(_p17.h + y1,y2) > 0)) ? true : false;
+   });
+   var Circle = function (a) {    return {ctor: "Circle",_0: a};};
+   var circle = F3(function (centerX,centerY,radius) {    return Circle({cx: centerX,cy: centerY,radius: radius});});
+   var Rectangle = function (a) {    return {ctor: "Rectangle",_0: a};};
+   var rectangle = F4(function (centerX,centerY,width,height) {    return Rectangle({cx: centerX,cy: centerY,w: width,h: height});});
+   return _elm.Collision2D.values = {_op: _op
+                                    ,axisAlignedBoundingBox: axisAlignedBoundingBox
+                                    ,circleToCircle: circleToCircle
+                                    ,rectangleSide: rectangleSide
+                                    ,rectangle: rectangle
+                                    ,circle: circle
+                                    ,Top: Top
+                                    ,Right: Right
+                                    ,Bottom: Bottom
+                                    ,Left: Left};
+};

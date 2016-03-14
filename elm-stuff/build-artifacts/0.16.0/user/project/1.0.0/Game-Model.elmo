@@ -1,0 +1,50 @@
+Elm.Game = Elm.Game || {};
+Elm.Game.Model = Elm.Game.Model || {};
+Elm.Game.Model.make = function (_elm) {
+   "use strict";
+   _elm.Game = _elm.Game || {};
+   _elm.Game.Model = _elm.Game.Model || {};
+   if (_elm.Game.Model.values) return _elm.Game.Model.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Collision2D = Elm.Collision2D.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var _op = {};
+   var Game = F3(function (a,b,c) {    return {state: a,player: b,ground: c};});
+   var Ground = F3(function (a,b,c) {    return {x: a,y: b,rect: c};});
+   var Player = F7(function (a,b,c,d,e,f,g) {    return {x: a,y: b,vx: c,vy: d,dir: e,rect: f,grounded: g};});
+   var player = F7(function (x,y,vx,vy,dir,rect,grounded) {    return A7(Player,x,y,vx,vy,dir,rect,grounded);});
+   var Right = {ctor: "Right"};
+   var Left = {ctor: "Left"};
+   var Pause = {ctor: "Pause"};
+   var Play = {ctor: "Play"};
+   var defaultGame = function () {
+      var groundRect = A4($Collision2D.rectangle,0,0,32,32);
+      var playerRect = A4($Collision2D.rectangle,0,250,32,32);
+      return {state: Play,player: A7(Player,0,250,0,0,Left,playerRect,false),ground: A3(Ground,0,0,groundRect)};
+   }();
+   var _p0 = {ctor: "_Tuple2",_0: 300,_1: 200};
+   var halfWidth = _p0._0;
+   var halfHeight = _p0._1;
+   var _p1 = {ctor: "_Tuple2",_0: 600,_1: 400};
+   var gameWidth = _p1._0;
+   var gameHeight = _p1._1;
+   return _elm.Game.Model.values = {_op: _op
+                                   ,gameHeight: gameHeight
+                                   ,gameWidth: gameWidth
+                                   ,halfHeight: halfHeight
+                                   ,halfWidth: halfWidth
+                                   ,Play: Play
+                                   ,Pause: Pause
+                                   ,Left: Left
+                                   ,Right: Right
+                                   ,Player: Player
+                                   ,Ground: Ground
+                                   ,Game: Game
+                                   ,player: player
+                                   ,defaultGame: defaultGame};
+};

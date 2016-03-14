@@ -1,0 +1,23 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values) return _elm.Main.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Game$Input = Elm.Game.Input.make(_elm),
+   $Game$Model = Elm.Game.Model.make(_elm),
+   $Game$Update = Elm.Game.Update.make(_elm),
+   $Game$View = Elm.Game.View.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Window = Elm.Window.make(_elm);
+   var _op = {};
+   var gameState = A3($Signal.foldp,$Game$Update.update,$Game$Model.defaultGame,$Game$Input.input);
+   var main = A3($Signal.map2,$Game$View.view,$Window.dimensions,gameState);
+   return _elm.Main.values = {_op: _op,gameState: gameState,main: main};
+};
