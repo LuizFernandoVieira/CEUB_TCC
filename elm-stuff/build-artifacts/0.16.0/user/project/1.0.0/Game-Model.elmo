@@ -14,7 +14,7 @@ Elm.Game.Model.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var Game = F3(function (a,b,c) {    return {state: a,player: b,ground: c};});
+   var Game = F3(function (a,b,c) {    return {state: a,player: b,grounds: c};});
    var Ground = F3(function (a,b,c) {    return {x: a,y: b,rect: c};});
    var Player = F7(function (a,b,c,d,e,f,g) {    return {x: a,y: b,vx: c,vy: d,dir: e,rect: f,grounded: g};});
    var player = F7(function (x,y,vx,vy,dir,rect,grounded) {    return A7(Player,x,y,vx,vy,dir,rect,grounded);});
@@ -23,9 +23,10 @@ Elm.Game.Model.make = function (_elm) {
    var Pause = {ctor: "Pause"};
    var Play = {ctor: "Play"};
    var defaultGame = function () {
-      var groundRect = A4($Collision2D.rectangle,0,0,32,32);
+      var groundRect2 = A4($Collision2D.rectangle,32,0,32,32);
+      var groundRect1 = A4($Collision2D.rectangle,0,0,32,32);
       var playerRect = A4($Collision2D.rectangle,0,250,32,32);
-      return {state: Play,player: A7(Player,0,250,0,0,Left,playerRect,false),ground: A3(Ground,0,0,groundRect)};
+      return {state: Play,player: A7(Player,0,250,0,0,Left,playerRect,false),grounds: _U.list([A3(Ground,32,0,groundRect2),A3(Ground,0,0,groundRect1)])};
    }();
    var _p0 = {ctor: "_Tuple2",_0: 300,_1: 200};
    var halfWidth = _p0._0;

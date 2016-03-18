@@ -17,8 +17,19 @@ Elm.Game.Update.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $Time = Elm.Time.make(_elm);
    var _op = {};
-   var correctCollisions = F3(function (game,oldY,player) {
-      return A2($Collision2D.axisAlignedBoundingBox,player.rect,game.ground.rect) ? _U.update(player,{y: oldY,grounded: true}) : _U.update(player,
+   var handleMaybe = function (x) {
+      var _p0 = x;
+      if (_p0.ctor === "Just") {
+            return _p0._0;
+         } else {
+            return _U.crashCase("Game.Update",{start: {line: 103,column: 3},end: {line: 105,column: 53}},_p0)("error: fromJust Nothing");
+         }
+   };
+   var correctCollisions = F3(function (_p2,oldY,player) {
+      var _p3 = _p2;
+      var ground$ = handleMaybe($List.head(_p3.grounds));
+      var rect$ = ground$.rect;
+      return A2($Collision2D.axisAlignedBoundingBox,player.rect,ground$.rect) ? _U.update(player,{y: oldY,grounded: true}) : _U.update(player,
       {y: player.y,grounded: false});
    });
    var collisionUpdate = function (player) {    return _U.update(player,{rect: A4($Collision2D.rectangle,player.x,player.y,32,32)});};
@@ -36,10 +47,10 @@ Elm.Game.Update.make = function (_elm) {
       var oldX = player.x;
       return A3(correctCollisions,game,oldY,collisionUpdate(A2(physicsUpdate,dt,A2(jumpUpdate,keys,A2(walkUpdate,keys,A2(gravityUpdate,dt,player))))));
    });
-   var update = F2(function (_p0,game) {
-      var _p1 = _p0;
+   var update = F2(function (_p4,game) {
+      var _p5 = _p4;
       var newState = $Game$Model.Play;
-      return _U.update(game,{state: newState,player: A4(updatePlayer,_p1._0,_p1._1,game.player,game)});
+      return _U.update(game,{state: newState,player: A4(updatePlayer,_p5._0,_p5._1,game.player,game)});
    });
    return _elm.Game.Update.values = {_op: _op
                                     ,update: update
@@ -49,5 +60,6 @@ Elm.Game.Update.make = function (_elm) {
                                     ,jumpUpdate: jumpUpdate
                                     ,physicsUpdate: physicsUpdate
                                     ,collisionUpdate: collisionUpdate
-                                    ,correctCollisions: correctCollisions};
+                                    ,correctCollisions: correctCollisions
+                                    ,handleMaybe: handleMaybe};
 };

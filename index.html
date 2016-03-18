@@ -6934,7 +6934,7 @@ Elm.Game.Model.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var Game = F3(function (a,b,c) {    return {state: a,player: b,ground: c};});
+   var Game = F3(function (a,b,c) {    return {state: a,player: b,grounds: c};});
    var Ground = F3(function (a,b,c) {    return {x: a,y: b,rect: c};});
    var Player = F7(function (a,b,c,d,e,f,g) {    return {x: a,y: b,vx: c,vy: d,dir: e,rect: f,grounded: g};});
    var player = F7(function (x,y,vx,vy,dir,rect,grounded) {    return A7(Player,x,y,vx,vy,dir,rect,grounded);});
@@ -6943,9 +6943,10 @@ Elm.Game.Model.make = function (_elm) {
    var Pause = {ctor: "Pause"};
    var Play = {ctor: "Play"};
    var defaultGame = function () {
-      var groundRect = A4($Collision2D.rectangle,0,0,32,32);
+      var groundRect2 = A4($Collision2D.rectangle,32,0,32,32);
+      var groundRect1 = A4($Collision2D.rectangle,0,0,32,32);
       var playerRect = A4($Collision2D.rectangle,0,250,32,32);
-      return {state: Play,player: A7(Player,0,250,0,0,Left,playerRect,false),ground: A3(Ground,0,0,groundRect)};
+      return {state: Play,player: A7(Player,0,250,0,0,Left,playerRect,false),grounds: _U.list([A3(Ground,32,0,groundRect2),A3(Ground,0,0,groundRect1)])};
    }();
    var _p0 = {ctor: "_Tuple2",_0: 300,_1: 200};
    var halfWidth = _p0._0;
@@ -6986,8 +6987,19 @@ Elm.Game.Update.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $Time = Elm.Time.make(_elm);
    var _op = {};
-   var correctCollisions = F3(function (game,oldY,player) {
-      return A2($Collision2D.axisAlignedBoundingBox,player.rect,game.ground.rect) ? _U.update(player,{y: oldY,grounded: true}) : _U.update(player,
+   var handleMaybe = function (x) {
+      var _p0 = x;
+      if (_p0.ctor === "Just") {
+            return _p0._0;
+         } else {
+            return _U.crashCase("Game.Update",{start: {line: 103,column: 3},end: {line: 105,column: 53}},_p0)("error: fromJust Nothing");
+         }
+   };
+   var correctCollisions = F3(function (_p2,oldY,player) {
+      var _p3 = _p2;
+      var ground$ = handleMaybe($List.head(_p3.grounds));
+      var rect$ = ground$.rect;
+      return A2($Collision2D.axisAlignedBoundingBox,player.rect,ground$.rect) ? _U.update(player,{y: oldY,grounded: true}) : _U.update(player,
       {y: player.y,grounded: false});
    });
    var collisionUpdate = function (player) {    return _U.update(player,{rect: A4($Collision2D.rectangle,player.x,player.y,32,32)});};
@@ -7005,10 +7017,10 @@ Elm.Game.Update.make = function (_elm) {
       var oldX = player.x;
       return A3(correctCollisions,game,oldY,collisionUpdate(A2(physicsUpdate,dt,A2(jumpUpdate,keys,A2(walkUpdate,keys,A2(gravityUpdate,dt,player))))));
    });
-   var update = F2(function (_p0,game) {
-      var _p1 = _p0;
+   var update = F2(function (_p4,game) {
+      var _p5 = _p4;
       var newState = $Game$Model.Play;
-      return _U.update(game,{state: newState,player: A4(updatePlayer,_p1._0,_p1._1,game.player,game)});
+      return _U.update(game,{state: newState,player: A4(updatePlayer,_p5._0,_p5._1,game.player,game)});
    });
    return _elm.Game.Update.values = {_op: _op
                                     ,update: update
@@ -7018,7 +7030,8 @@ Elm.Game.Update.make = function (_elm) {
                                     ,jumpUpdate: jumpUpdate
                                     ,physicsUpdate: physicsUpdate
                                     ,collisionUpdate: collisionUpdate
-                                    ,correctCollisions: correctCollisions};
+                                    ,correctCollisions: correctCollisions
+                                    ,handleMaybe: handleMaybe};
 };Elm.Game = Elm.Game || {};
 Elm.Game.View = Elm.Game.View || {};
 Elm.Game.View.make = function (_elm) {

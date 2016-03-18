@@ -5,6 +5,8 @@ import Collision2D
 import Game.Input as Input                  
 import Time exposing (..)
 import Game.Model as Model exposing (Game)
+import List exposing (..)
+import Debug
 
 update : (Float, Input.Keys) -> Game -> Game
 update (dt, keys) game =
@@ -75,15 +77,29 @@ collisionUpdate player =
     rect = Collision2D.rectangle player.x player.y 32 32
   }
 
+--fullCollisions =
+--  map (\e -> correctCollisions e)
+
 correctCollisions : Game -> Float -> Model.Player -> Model.Player
-correctCollisions game oldY player =
-  if Collision2D.axisAlignedBoundingBox player.rect game.ground.rect then
-    { player | 
-        y = oldY,
-        grounded = True   
-    }
-  else 
-    { player | 
-      y = player.y,
-      grounded = False
-    }
+correctCollisions ({grounds} as game) oldY player =
+  let
+    ground' = handleMaybe 
+      <| head grounds
+    rect' = ground'.rect
+  in
+    if Collision2D.axisAlignedBoundingBox player.rect ground'.rect then
+      { player | 
+          y = oldY,
+          grounded = True   
+      }
+    else 
+      { player | 
+        y = player.y,
+        grounded = False
+      }
+
+handleMaybe : Maybe a -> a
+handleMaybe x =
+  case x of
+    Just y -> y
+    Nothing -> Debug.crash "error: fromJust Nothing"
