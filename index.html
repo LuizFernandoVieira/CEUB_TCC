@@ -6992,16 +6992,33 @@ Elm.Game.Update.make = function (_elm) {
       if (_p0.ctor === "Just") {
             return _p0._0;
          } else {
-            return _U.crashCase("Game.Update",{start: {line: 103,column: 3},end: {line: 105,column: 53}},_p0)("error: fromJust Nothing");
+            return _U.crashCase("Game.Update",{start: {line: 111,column: 3},end: {line: 113,column: 53}},_p0)("error: fromJust Nothing");
          }
    };
-   var correctCollisions = F3(function (_p2,oldY,player) {
-      var _p3 = _p2;
-      var ground$ = handleMaybe($List.head(_p3.grounds));
-      var rect$ = ground$.rect;
-      return A2($Collision2D.axisAlignedBoundingBox,player.rect,ground$.rect) ? _U.update(player,{y: oldY,grounded: true}) : _U.update(player,
+   var correctCollisions = F3(function (ground,oldY,player) {
+      var rect$ = ground.rect;
+      return A2($Collision2D.axisAlignedBoundingBox,player.rect,rect$) ? _U.update(player,{y: oldY,grounded: true}) : _U.update(player,
       {y: player.y,grounded: false});
    });
+   var percorreLista = F3(function (grounds,oldY,player) {
+      percorreLista: while (true) {
+         var _p2 = grounds;
+         if (_p2.ctor === "[]") {
+               return player;
+            } else {
+               if (_p2._1.ctor === "[]") {
+                     return A3(correctCollisions,_p2._0,oldY,player);
+                  } else {
+                     var _v2 = A2($List.take,1,grounds),_v3 = oldY,_v4 = player;
+                     grounds = _v2;
+                     oldY = _v3;
+                     player = _v4;
+                     continue percorreLista;
+                  }
+            }
+      }
+   });
+   var fullCollisions = F3(function (_p3,oldY,player) {    var _p4 = _p3;return A3(percorreLista,_p4.grounds,oldY,player);});
    var collisionUpdate = function (player) {    return _U.update(player,{rect: A4($Collision2D.rectangle,player.x,player.y,32,32)});};
    var physicsUpdate = F2(function (dt,obj) {    return _U.update(obj,{x: obj.x + obj.vx * dt,y: obj.y + obj.vy * dt});});
    var jumpUpdate = F2(function (keys,player) {
@@ -7015,12 +7032,12 @@ Elm.Game.Update.make = function (_elm) {
    var updatePlayer = F4(function (dt,keys,player,game) {
       var oldY = player.y;
       var oldX = player.x;
-      return A3(correctCollisions,game,oldY,collisionUpdate(A2(physicsUpdate,dt,A2(jumpUpdate,keys,A2(walkUpdate,keys,A2(gravityUpdate,dt,player))))));
+      return A3(fullCollisions,game,oldY,collisionUpdate(A2(physicsUpdate,dt,A2(jumpUpdate,keys,A2(walkUpdate,keys,A2(gravityUpdate,dt,player))))));
    });
-   var update = F2(function (_p4,game) {
-      var _p5 = _p4;
+   var update = F2(function (_p5,game) {
+      var _p6 = _p5;
       var newState = $Game$Model.Play;
-      return _U.update(game,{state: newState,player: A4(updatePlayer,_p5._0,_p5._1,game.player,game)});
+      return _U.update(game,{state: newState,player: A4(updatePlayer,_p6._0,_p6._1,game.player,game)});
    });
    return _elm.Game.Update.values = {_op: _op
                                     ,update: update
@@ -7030,6 +7047,8 @@ Elm.Game.Update.make = function (_elm) {
                                     ,jumpUpdate: jumpUpdate
                                     ,physicsUpdate: physicsUpdate
                                     ,collisionUpdate: collisionUpdate
+                                    ,fullCollisions: fullCollisions
+                                    ,percorreLista: percorreLista
                                     ,correctCollisions: correctCollisions
                                     ,handleMaybe: handleMaybe};
 };Elm.Game = Elm.Game || {};
