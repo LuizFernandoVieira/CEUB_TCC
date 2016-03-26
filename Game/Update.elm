@@ -78,7 +78,7 @@ collisionUpdate player =
   }
 
 updateCollisions : List Model.Ground -> (Float,Float) -> Model.Player -> Model.Player
-updateCollisions grounds (oldX,oldY)player =
+updateCollisions grounds (oldX,oldY) player =
   let
     grounds' = filter (\g -> isColliding g.rect player.rect) grounds
   in
