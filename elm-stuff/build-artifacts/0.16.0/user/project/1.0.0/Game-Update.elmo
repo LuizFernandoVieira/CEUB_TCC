@@ -22,7 +22,7 @@ Elm.Game.Update.make = function (_elm) {
       if (_p0.ctor === "Just") {
             return _p0._0;
          } else {
-            return _U.crashCase("Game.Update",{start: {line: 111,column: 3},end: {line: 113,column: 53}},_p0)("error: fromJust Nothing");
+            return _U.crashCase("Game.Update",{start: {line: 116,column: 3},end: {line: 118,column: 53}},_p0)("error: fromJust Nothing");
          }
    };
    var isColliding = F2(function (ground,player) {    return A2($Collision2D.axisAlignedBoundingBox,player,ground);});
@@ -51,6 +51,9 @@ Elm.Game.Update.make = function (_elm) {
    var updateCollisions = F3(function (grounds,_p9,player) {
       var _p10 = _p9;
       var grounds$ = A2($List.filter,function (g) {    return A2(isColliding,g.rect,player.rect);},grounds);
+      var grounds$$ = A2($List.filter,
+      F2(function (x,y) {    return _U.eq(x,y);})($Maybe.Just($Collision2D.Top)),
+      A2($List.map,function (g) {    return A2($Collision2D.rectangleSide,player.rect,g.rect);},grounds$));
       return A3(fullCollisions,grounds$,{ctor: "_Tuple2",_0: _p10._0,_1: _p10._1},_U.update(player,{grounded: _U.cmp($List.length(grounds$),0) > 0}));
    });
    var collisionUpdate = function (player) {    return _U.update(player,{rect: A4($Collision2D.rectangle,player.x,player.y,32,32)});};

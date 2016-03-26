@@ -80,7 +80,12 @@ collisionUpdate player =
 updateCollisions : List Model.Ground -> (Float,Float) -> Model.Player -> Model.Player
 updateCollisions grounds (oldX,oldY) player =
   let
-    grounds' = filter (\g -> isColliding g.rect player.rect) grounds
+    grounds' = 
+      filter (\g -> isColliding g.rect player.rect) grounds
+    grounds'' = 
+      filter ((==) (Just Collision2D.Top))  
+      <| map (\g -> Collision2D.rectangleSide player.rect g.rect)
+      <| grounds'
   in
     fullCollisions grounds' (oldX,oldY)
       <| { player |
