@@ -22,13 +22,11 @@ Elm.Game.Update.make = function (_elm) {
       if (_p0.ctor === "Just") {
             return _p0._0;
          } else {
-            return _U.crashCase("Game.Update",{start: {line: 104,column: 3},end: {line: 106,column: 53}},_p0)("error: fromJust Nothing");
+            return _U.crashCase("Game.Update",{start: {line: 110,column: 3},end: {line: 112,column: 53}},_p0)("error: fromJust Nothing");
          }
    };
-   var correctCollisions = F3(function (ground,oldY,player) {
-      var rect$ = ground.rect;
-      return A2($Collision2D.axisAlignedBoundingBox,player.rect,rect$) ? _U.update(player,{y: oldY,grounded: true}) : _U.update(player,{y: player.y});
-   });
+   var isColliding = F2(function (ground,player) {    return A2($Collision2D.axisAlignedBoundingBox,player,ground);});
+   var correctCollisions = F3(function (ground,oldY,player) {    return _U.update(player,{y: oldY});});
    var fullCollisions = F3(function (grounds,oldY,player) {
       fullCollisions: while (true) {
          var _p2 = grounds;
@@ -47,6 +45,10 @@ Elm.Game.Update.make = function (_elm) {
             }
       }
    });
+   var updateCollisions = F3(function (grounds,oldY,player) {
+      var grounds$ = A2($List.filter,function (g) {    return A2(isColliding,g.rect,player.rect);},grounds);
+      return A3(fullCollisions,grounds$,oldY,_U.update(player,{grounded: _U.cmp($List.length(grounds$),0) > 0}));
+   });
    var collisionUpdate = function (player) {    return _U.update(player,{rect: A4($Collision2D.rectangle,player.x,player.y,32,32)});};
    var physicsUpdate = F2(function (dt,obj) {    return _U.update(obj,{x: obj.x + obj.vx * dt,y: obj.y + obj.vy * dt});});
    var jumpUpdate = F2(function (keys,player) {
@@ -60,7 +62,7 @@ Elm.Game.Update.make = function (_elm) {
    var updatePlayer = F4(function (dt,keys,player,game) {
       var oldY = player.y;
       var oldX = player.x;
-      return A3(fullCollisions,game.grounds,oldY,collisionUpdate(A2(physicsUpdate,dt,A2(jumpUpdate,keys,A2(walkUpdate,keys,A2(gravityUpdate,dt,player))))));
+      return A3(updateCollisions,game.grounds,oldY,collisionUpdate(A2(physicsUpdate,dt,A2(jumpUpdate,keys,A2(walkUpdate,keys,A2(gravityUpdate,dt,player))))));
    });
    var update = F2(function (_p3,game) {
       var _p4 = _p3;
@@ -75,7 +77,9 @@ Elm.Game.Update.make = function (_elm) {
                                     ,jumpUpdate: jumpUpdate
                                     ,physicsUpdate: physicsUpdate
                                     ,collisionUpdate: collisionUpdate
+                                    ,updateCollisions: updateCollisions
                                     ,fullCollisions: fullCollisions
                                     ,correctCollisions: correctCollisions
+                                    ,isColliding: isColliding
                                     ,handleMaybe: handleMaybe};
 };
