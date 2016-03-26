@@ -31,7 +31,7 @@ updatePlayer dt keys player game =
       |> jumpUpdate keys
       |> physicsUpdate dt
       |> collisionUpdate 
-      |> fullCollisions game oldY
+      |> fullCollisions game.grounds oldY
 
 gravityUpdate : Float -> Model.Player -> Model.Player
 gravityUpdate dt player =
@@ -77,18 +77,12 @@ collisionUpdate player =
     rect = Collision2D.rectangle player.x player.y 32 32
   }
 
-fullCollisions : Game -> Float -> Model.Player -> Model.Player
-fullCollisions ({grounds} as game) oldY player =
-  percorreLista grounds oldY player 
-  --map (\e -> correctCollisions e oldY player) grounds
-  --player = correctCollisions ground oldY player
-
-percorreLista : List Model.Ground -> Float -> Model.Player -> Model.Player
-percorreLista grounds oldY player  =
+fullCollisions : List Model.Ground -> Float -> Model.Player -> Model.Player
+fullCollisions grounds oldY player =
   case grounds of
     [] -> player
     [ground] -> correctCollisions ground oldY player 
-    h :: t -> correctCollisions h oldY player |> percorreLista t oldY
+    h :: t -> correctCollisions h oldY player |> fullCollisions t oldY
 
 correctCollisions : Model.Ground -> Float -> Model.Player -> Model.Player
 correctCollisions ground oldY player =

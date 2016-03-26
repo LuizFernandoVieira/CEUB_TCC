@@ -13,4 +13,4 @@ input =
   Signal.sampleOn dt (Signal.map2 (,) dt Keyboard.arrows)
 
 dt = 
-  Signal.map (\t -> t/50) (Time.fps 120)
+  Signal.map (\t -> t/40) (Time.fps 120)
