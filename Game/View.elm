@@ -6,6 +6,16 @@ import Graphics.Element exposing (..)
 
 import Game.Model as Model exposing (Game)
 
+groundToForm : Model.Ground -> Form
+groundToForm g =
+  let
+    groundSrc =
+      "img/ground.png"
+  in
+    image 32 32 groundSrc
+      |> toForm
+      |> move (g.x,g.y)
+
 view : (Int, Int) -> Game -> Element
 view (w',h') game =
   let
@@ -28,24 +38,33 @@ view (w',h') game =
       "img/playerstandleft.png"
       -- "/img/player/"++ verb ++ dir ++ ".png"
 
-    groundSrc =
-      "img/ground.png"
-
     playerImage =
       image 32 32 playerSrc
 
-    groundImage =
-      image 32 32 groundSrc
+    -- groundImage =
+    --   image 32 32 groundSrc
 
     position =
       (player.x, player.y)
+
+    backgroundForm = 
+      [ rect w h
+        |> filled (rgb 174 238 238)
+      ]
+
+    playerForm =
+      [ playerImage
+        |> toForm
+        |> move position
+      ]
+
+    groundForms =
+      List.map groundToForm game.grounds
+
+    fullFormList =
+      List.append backgroundForm
+        <| List.append playerForm
+        <| groundForms
   in
     collage w' h'
-      [ rect w h
-          |> filled (rgb 174 238 238)
-      , playerImage
-          |> toForm
-          |> move position
-      , groundImage
-          |> toForm
-      ]
+      <| fullFormList
