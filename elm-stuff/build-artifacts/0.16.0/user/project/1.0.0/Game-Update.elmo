@@ -28,7 +28,7 @@ Elm.Game.Update.make = function (_elm) {
    var correctCollisions = F3(function (ground,oldY,player) {
       var rect$ = ground.rect;
       return A2($Collision2D.axisAlignedBoundingBox,player.rect,rect$) ? _U.update(player,{y: oldY,grounded: true}) : _U.update(player,
-      {y: player.y,grounded: false});
+      {y: player.y,grounded: player.grounded});
    });
    var percorreLista = F3(function (grounds,oldY,player) {
       percorreLista: while (true) {
@@ -39,7 +39,7 @@ Elm.Game.Update.make = function (_elm) {
                if (_p2._1.ctor === "[]") {
                      return A3(correctCollisions,_p2._0,oldY,player);
                   } else {
-                     var _v2 = A2($List.take,1,grounds),_v3 = oldY,_v4 = player;
+                     var _v2 = _p2._1,_v3 = oldY,_v4 = A3(correctCollisions,_p2._0,oldY,player);
                      grounds = _v2;
                      oldY = _v3;
                      player = _v4;

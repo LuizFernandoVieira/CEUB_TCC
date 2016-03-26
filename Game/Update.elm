@@ -83,13 +83,13 @@ fullCollisions ({grounds} as game) oldY player =
   --map (\e -> correctCollisions e oldY player) grounds
   --player = correctCollisions ground oldY player
 
-percorreLista: List Model.Ground -> Float -> Model.Player -> Model.Player
+percorreLista : List Model.Ground -> Float -> Model.Player -> Model.Player
 percorreLista grounds oldY player  =
   case grounds of
     [] -> player
     [ground] -> correctCollisions ground oldY player 
-    [ground::grounds] -> correctCollisions ground oldY player |> percorreLista (take 1 grounds) oldY
---correctCollisions (take 1 grounds) oldY player
+    h :: t -> correctCollisions h oldY player |> percorreLista t oldY
+
 correctCollisions : Model.Ground -> Float -> Model.Player -> Model.Player
 correctCollisions ground oldY player =
   let
@@ -102,8 +102,7 @@ correctCollisions ground oldY player =
       }
     else 
       { player | 
-        y = player.y,
-        grounded = False
+        y = player.y
       }
 
 handleMaybe : Maybe a -> a
