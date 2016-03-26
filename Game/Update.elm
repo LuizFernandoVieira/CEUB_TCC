@@ -31,7 +31,7 @@ updatePlayer dt keys player game =
       |> jumpUpdate keys
       |> physicsUpdate dt
       |> collisionUpdate 
-      |> updateCollisions game.grounds oldY
+      |> updateCollisions game.grounds (oldX,oldY)
 
 gravityUpdate : Float -> Model.Player -> Model.Player
 gravityUpdate dt player =
@@ -77,27 +77,28 @@ collisionUpdate player =
     rect = Collision2D.rectangle player.x player.y 32 32
   }
 
-updateCollisions : List Model.Ground -> Float -> Model.Player -> Model.Player
-updateCollisions grounds oldY player =
+updateCollisions : List Model.Ground -> (Float,Float) -> Model.Player -> Model.Player
+updateCollisions grounds (oldX,oldY)player =
   let
     grounds' = filter (\g -> isColliding g.rect player.rect) grounds
   in
-    fullCollisions grounds' oldY 
+    fullCollisions grounds' (oldX,oldY)
       <| { player |
             grounded = length grounds' > 0
          }
 
-fullCollisions : List Model.Ground -> Float -> Model.Player -> Model.Player
-fullCollisions grounds oldY player =
+fullCollisions : List Model.Ground -> (Float,Float) -> Model.Player -> Model.Player
+fullCollisions grounds (oldX,oldY) player =
   case grounds of
     [] -> player
-    [ground] -> correctCollisions ground oldY player 
-    h :: t -> correctCollisions h oldY player |> fullCollisions t oldY
+    [ground] -> correctCollisions ground (oldX,oldY) player 
+    h :: t -> correctCollisions h (oldX,oldY) player |> fullCollisions t (oldX,oldY)
 
-correctCollisions : Model.Ground -> Float -> Model.Player -> Model.Player
-correctCollisions ground oldY player =
+correctCollisions : Model.Ground -> (Float,Float) -> Model.Player -> Model.Player
+correctCollisions ground (oldX,oldY) player =
     { player | 
-        y = oldY
+        y = oldY,
+        x = oldX
     }
 
 isColliding : Collision2D.Rectangle -> Collision2D.Rectangle -> Bool
