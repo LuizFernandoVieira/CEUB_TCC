@@ -37,7 +37,7 @@ Elm.Game.Model.make = function (_elm) {
       return A2(makeGroundLine,index,chars$);
    };
    var asciiToGround = function (string) {
-      var splitted = A2($String.split,"\n",string);
+      var splitted = $List.reverse(A2($String.split,"\n",string));
       var lines = withIndex(splitted);
       return $List.concat(A2($List.map,lineToGround,lines));
    };

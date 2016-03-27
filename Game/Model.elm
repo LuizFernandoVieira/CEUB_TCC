@@ -87,6 +87,7 @@ asciiToGround : String -> List Ground
 asciiToGround string =
   let 
     splitted = String.split "\n" string
+      |> List.reverse
     lines = splitted
       |> withIndex
   in
