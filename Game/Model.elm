@@ -93,12 +93,7 @@ asciiToGround string =
   in
     List.map lineToGround lines
       |> List.concat
-  --   positions = lines
-  --     |> withIndex
-  --     |> concatMap parseLine
-  --   count = length positions
-  --   makeGround (row,col) = Model.makeGround row col
-  -- in map makeGround positions
+
 lineToGround : (Int,String) -> List Ground
 lineToGround line =
   let
