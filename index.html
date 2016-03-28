@@ -6919,6 +6919,59 @@ Elm.Game.Input.make = function (_elm) {
    var Keys = F2(function (a,b) {    return {x: a,y: b};});
    return _elm.Game.Input.values = {_op: _op,Keys: Keys,input: input,dt: dt};
 };Elm.Game = Elm.Game || {};
+Elm.Game.Level = Elm.Game.Level || {};
+Elm.Game.Level.make = function (_elm) {
+   "use strict";
+   _elm.Game = _elm.Game || {};
+   _elm.Game.Level = _elm.Game.Level || {};
+   if (_elm.Game.Level.values) return _elm.Game.Level.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
+   var _op = {};
+   var zip = F2(function (xs,ys) {    return A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),xs,ys);});
+   var toStringList = function (str) {    return A2($List.map,$String.fromChar,$String.toList(str));};
+   var withIndex = function (list) {    return A2(zip,_U.range(0,$List.length(list)),list);};
+   var xFunc = function (index) {    return $Basics.toFloat(-350 + 32 * index);};
+   var yFunc = function (index) {    return $Basics.toFloat(-400 + 32 * index);};
+   var zipPositions = F2(function (yPos,xPosList) {    return A2($List.map,function (x) {    return {ctor: "_Tuple2",_0: x,_1: yPos};},xPosList);});
+   var parseLine = function (line) {    return A2($List.map,$Basics.fst,A2($List.filter,function (l) {    return _U.eq($Basics.snd(l),"*");},line));};
+   var parseXCoordinates = function (line) {    return parseLine(withIndex(toStringList(line)));};
+   var calculateTuple = function (_p0) {    var _p1 = _p0;return {ctor: "_Tuple2",_0: xFunc(_p1._0),_1: yFunc(_p1._1)};};
+   var calculateCoordinates = function (positions) {    return A2($List.map,calculateTuple,positions);};
+   var parseLineToTuples = function (line) {
+      var xPosList = parseXCoordinates($Basics.snd(line));
+      var yPos = $Basics.fst(line);
+      return A2(zipPositions,yPos,xPosList);
+   };
+   var asciiToCoordinates = function (string) {
+      var splitted = $List.reverse(A2($String.split,"\n",string));
+      var indexedlines = withIndex(splitted);
+      return calculateCoordinates($List.concat(A2($List.map,parseLineToTuples,indexedlines)));
+   };
+   var level = "\n  *****************\n  *                         *\n  *                         *\n  *                     *\n  *                         *\n  *     ******              *\n  *                         *\n  *                         *\n  *                         *\n  *                         *\n  *              *****      *\n  *                         *          \n  *                         *\n  *                         *\n  *      ****               *\n  *                         *\n  ***       *****************\n";
+   var loadLevel = function (n) {    var level$ = level;return asciiToCoordinates(level$);};
+   return _elm.Game.Level.values = {_op: _op
+                                   ,loadLevel: loadLevel
+                                   ,level: level
+                                   ,asciiToCoordinates: asciiToCoordinates
+                                   ,parseLineToTuples: parseLineToTuples
+                                   ,calculateCoordinates: calculateCoordinates
+                                   ,calculateTuple: calculateTuple
+                                   ,parseXCoordinates: parseXCoordinates
+                                   ,parseLine: parseLine
+                                   ,zipPositions: zipPositions
+                                   ,yFunc: yFunc
+                                   ,xFunc: xFunc
+                                   ,withIndex: withIndex
+                                   ,toStringList: toStringList
+                                   ,zip: zip};
+};Elm.Game = Elm.Game || {};
 Elm.Game.Model = Elm.Game.Model || {};
 Elm.Game.Model.make = function (_elm) {
    "use strict";
@@ -6929,39 +6982,24 @@ Elm.Game.Model.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Collision2D = Elm.Collision2D.make(_elm),
    $Debug = Elm.Debug.make(_elm),
+   $Game$Level = Elm.Game.Level.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $String = Elm.String.make(_elm);
+   $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var zip = F2(function (xs,ys) {    return A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),xs,ys);});
-   var withIndex = function (list) {    return A2(zip,_U.range(0,$List.length(list)),list);};
-   var xFunc = function (index) {    return $Basics.toFloat(-350 + 32 * index);};
-   var yFunc = function (index) {    return $Basics.toFloat(-400 + 32 * index);};
-   var parseLine = function (line) {
-      return A2($List.map,function (l) {    return xFunc($Basics.fst(l));},A2($List.filter,function (l) {    return _U.eq($Basics.snd(l),"*");},line));
-   };
-   var level = "\n  *****************\n  *                         *\n  *                         *\n  *                     *\n  *                         *\n  *     ******              *\n  *                         *\n  *                         *\n  *                         *\n  *                         *\n  *              *****      *\n  *                         *          \n  *                         *\n  *                         *\n  *      ****               *\n  *                         *\n  ***       *****************\n";
    var Game = F3(function (a,b,c) {    return {state: a,player: b,grounds: c};});
    var Ground = F3(function (a,b,c) {    return {x: a,y: b,rect: c};});
-   var makeGroundLine = F2(function (index,line) {
-      var xPos = parseLine(line);
-      var yPos = yFunc(index);
-      return A2($List.map,function (x) {    return A3(Ground,x,yPos,A4($Collision2D.rectangle,x,yPos,32,32));},xPos);
-   });
-   var lineToGround = function (line) {
-      var line$ = $Basics.snd(line);
-      var chars$ = withIndex(A2($List.map,$String.fromChar,$String.toList(line$)));
-      var index = $Basics.fst(line);
-      return A2(makeGroundLine,index,chars$);
+   var buildGround = function (coordinates) {
+      return A2($List.map,
+      function (_p0) {
+         var _p1 = _p0;
+         var _p3 = _p1._1;
+         var _p2 = _p1._0;
+         return A3(Ground,_p2,_p3,A4($Collision2D.rectangle,_p2,_p3,32,32));
+      },
+      coordinates);
    };
-   var asciiToGround = function (string) {
-      var splitted = $List.reverse(A2($String.split,"\n",string));
-      var lines = withIndex(splitted);
-      return $List.concat(A2($List.map,lineToGround,lines));
-   };
-   var loadLevel = function (n) {    var level$ = level;return asciiToGround(level$);};
    var Player = F7(function (a,b,c,d,e,f,g) {    return {x: a,y: b,vx: c,vy: d,dir: e,rect: f,grounded: g};});
    var player = F7(function (x,y,vx,vy,dir,rect,grounded) {    return A7(Player,x,y,vx,vy,dir,rect,grounded);});
    var Right = {ctor: "Right"};
@@ -6969,16 +7007,17 @@ Elm.Game.Model.make = function (_elm) {
    var Pause = {ctor: "Pause"};
    var Play = {ctor: "Play"};
    var defaultGame = function () {
-      var loadedGrounds = loadLevel(1);
+      var grounds$ = buildGround($Game$Level.loadLevel(1));
+      var loadedGrounds = $Game$Level.loadLevel(1);
       var playerRect = A4($Collision2D.rectangle,0,250,32,32);
-      return {state: Play,player: A7(Player,0,250,0,0,Left,playerRect,false),grounds: loadedGrounds};
+      return {state: Play,player: A7(Player,0,250,0,0,Left,playerRect,false),grounds: grounds$};
    }();
-   var _p0 = {ctor: "_Tuple2",_0: 300,_1: 200};
-   var halfWidth = _p0._0;
-   var halfHeight = _p0._1;
-   var _p1 = {ctor: "_Tuple2",_0: 600,_1: 400};
-   var gameWidth = _p1._0;
-   var gameHeight = _p1._1;
+   var _p4 = {ctor: "_Tuple2",_0: 300,_1: 200};
+   var halfWidth = _p4._0;
+   var halfHeight = _p4._1;
+   var _p5 = {ctor: "_Tuple2",_0: 600,_1: 400};
+   var gameWidth = _p5._0;
+   var gameHeight = _p5._1;
    return _elm.Game.Model.values = {_op: _op
                                    ,gameHeight: gameHeight
                                    ,gameWidth: gameWidth
@@ -6993,16 +7032,7 @@ Elm.Game.Model.make = function (_elm) {
                                    ,Game: Game
                                    ,player: player
                                    ,defaultGame: defaultGame
-                                   ,loadLevel: loadLevel
-                                   ,level: level
-                                   ,asciiToGround: asciiToGround
-                                   ,lineToGround: lineToGround
-                                   ,makeGroundLine: makeGroundLine
-                                   ,parseLine: parseLine
-                                   ,yFunc: yFunc
-                                   ,xFunc: xFunc
-                                   ,withIndex: withIndex
-                                   ,zip: zip};
+                                   ,buildGround: buildGround};
 };Elm.Game = Elm.Game || {};
 Elm.Game.Update = Elm.Game.Update || {};
 Elm.Game.Update.make = function (_elm) {

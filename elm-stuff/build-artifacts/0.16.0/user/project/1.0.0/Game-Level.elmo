@@ -1,0 +1,54 @@
+Elm.Game = Elm.Game || {};
+Elm.Game.Level = Elm.Game.Level || {};
+Elm.Game.Level.make = function (_elm) {
+   "use strict";
+   _elm.Game = _elm.Game || {};
+   _elm.Game.Level = _elm.Game.Level || {};
+   if (_elm.Game.Level.values) return _elm.Game.Level.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
+   var _op = {};
+   var zip = F2(function (xs,ys) {    return A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),xs,ys);});
+   var toStringList = function (str) {    return A2($List.map,$String.fromChar,$String.toList(str));};
+   var withIndex = function (list) {    return A2(zip,_U.range(0,$List.length(list)),list);};
+   var xFunc = function (index) {    return $Basics.toFloat(-350 + 32 * index);};
+   var yFunc = function (index) {    return $Basics.toFloat(-400 + 32 * index);};
+   var zipPositions = F2(function (yPos,xPosList) {    return A2($List.map,function (x) {    return {ctor: "_Tuple2",_0: x,_1: yPos};},xPosList);});
+   var parseLine = function (line) {    return A2($List.map,$Basics.fst,A2($List.filter,function (l) {    return _U.eq($Basics.snd(l),"*");},line));};
+   var parseXCoordinates = function (line) {    return parseLine(withIndex(toStringList(line)));};
+   var calculateTuple = function (_p0) {    var _p1 = _p0;return {ctor: "_Tuple2",_0: xFunc(_p1._0),_1: yFunc(_p1._1)};};
+   var calculateCoordinates = function (positions) {    return A2($List.map,calculateTuple,positions);};
+   var parseLineToTuples = function (line) {
+      var xPosList = parseXCoordinates($Basics.snd(line));
+      var yPos = $Basics.fst(line);
+      return A2(zipPositions,yPos,xPosList);
+   };
+   var asciiToCoordinates = function (string) {
+      var splitted = $List.reverse(A2($String.split,"\n",string));
+      var indexedlines = withIndex(splitted);
+      return calculateCoordinates($List.concat(A2($List.map,parseLineToTuples,indexedlines)));
+   };
+   var level = "\n  *****************\n  *                         *\n  *                         *\n  *                     *\n  *                         *\n  *     ******              *\n  *                         *\n  *                         *\n  *                         *\n  *                         *\n  *              *****      *\n  *                         *          \n  *                         *\n  *                         *\n  *      ****               *\n  *                         *\n  ***       *****************\n";
+   var loadLevel = function (n) {    var level$ = level;return asciiToCoordinates(level$);};
+   return _elm.Game.Level.values = {_op: _op
+                                   ,loadLevel: loadLevel
+                                   ,level: level
+                                   ,asciiToCoordinates: asciiToCoordinates
+                                   ,parseLineToTuples: parseLineToTuples
+                                   ,calculateCoordinates: calculateCoordinates
+                                   ,calculateTuple: calculateTuple
+                                   ,parseXCoordinates: parseXCoordinates
+                                   ,parseLine: parseLine
+                                   ,zipPositions: zipPositions
+                                   ,yFunc: yFunc
+                                   ,xFunc: xFunc
+                                   ,withIndex: withIndex
+                                   ,toStringList: toStringList
+                                   ,zip: zip};
+};
