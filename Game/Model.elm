@@ -40,7 +40,6 @@ defaultGame : Game
 defaultGame =
   let
     playerRect = Collision2D.rectangle 0 250 32 32
-    loadedGrounds = loadLevel(1)
     grounds' = loadLevel(1)
                 |> buildGround
   in

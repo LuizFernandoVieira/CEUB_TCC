@@ -7008,7 +7008,6 @@ Elm.Game.Model.make = function (_elm) {
    var Play = {ctor: "Play"};
    var defaultGame = function () {
       var grounds$ = buildGround($Game$Level.loadLevel(1));
-      var loadedGrounds = $Game$Level.loadLevel(1);
       var playerRect = A4($Collision2D.rectangle,0,250,32,32);
       return {state: Play,player: A7(Player,0,250,0,0,Left,playerRect,false),grounds: grounds$};
    }();
