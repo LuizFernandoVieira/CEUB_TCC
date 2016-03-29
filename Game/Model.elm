@@ -26,10 +26,16 @@ type alias Ground =
   , rect : Collision2D.Rectangle
   }
 
+type alias Camera =
+  { x : Float
+  , y : Float
+  }
+
 type alias Game =
   { state: State
   , player : Player
   , grounds : List Ground
+  , camera : Camera
   }
 
 player : Float -> Float -> Float -> Float -> Direction -> Collision2D.Rectangle -> Bool -> Player
@@ -42,10 +48,12 @@ defaultGame =
     playerRect = Collision2D.rectangle 0 250 32 32
     grounds' = loadLevel(1)
                 |> buildGround
+    camera' = Camera 0 0
   in
     { state = Play 
     , player = Player 0 250 0 0 Left playerRect False
     , grounds = grounds'
+    , camera = camera'
     }
 
 buildGround : List (Float,Float) -> List Ground

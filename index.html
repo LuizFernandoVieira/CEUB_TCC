@@ -6954,7 +6954,7 @@ Elm.Game.Level.make = function (_elm) {
       var indexedlines = withIndex(splitted);
       return calculateCoordinates($List.concat(A2($List.map,parseLineToTuples,indexedlines)));
    };
-   var level = "\n  *****************\n  *                         *\n  *                         *\n  *                     *\n  *                         *\n  *     ******              *\n  *                         *\n  *                         *\n  *                         *\n  *                         *\n  *              *****      *\n  *                         *          \n  *                         *\n  *                         *\n  *      ****               *\n  *                         *\n  ***       *****************\n";
+   var level = "\n  *****************\n  *                         *\n  *                         *\n  *                     *\n  *                         *\n  *                         *\n  *                         *\n  *                         *\n  *                         *\n  *                         *\n  *              *****      *\n  *                         *          \n  *                         *\n  *                         *\n  *      ****               *\n  *                         *\n  ***       *****************\n";
    var loadLevel = function (n) {    var level$ = level;return asciiToCoordinates(level$);};
    return _elm.Game.Level.values = {_op: _op
                                    ,loadLevel: loadLevel
@@ -6988,7 +6988,8 @@ Elm.Game.Model.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var Game = F3(function (a,b,c) {    return {state: a,player: b,grounds: c};});
+   var Game = F4(function (a,b,c,d) {    return {state: a,player: b,grounds: c,camera: d};});
+   var Camera = F2(function (a,b) {    return {x: a,y: b};});
    var Ground = F3(function (a,b,c) {    return {x: a,y: b,rect: c};});
    var buildGround = function (coordinates) {
       return A2($List.map,
@@ -7007,9 +7008,10 @@ Elm.Game.Model.make = function (_elm) {
    var Pause = {ctor: "Pause"};
    var Play = {ctor: "Play"};
    var defaultGame = function () {
+      var camera$ = A2(Camera,0,0);
       var grounds$ = buildGround($Game$Level.loadLevel(1));
       var playerRect = A4($Collision2D.rectangle,0,250,32,32);
-      return {state: Play,player: A7(Player,0,250,0,0,Left,playerRect,false),grounds: grounds$};
+      return {state: Play,player: A7(Player,0,250,0,0,Left,playerRect,false),grounds: grounds$,camera: camera$};
    }();
    var _p4 = {ctor: "_Tuple2",_0: 300,_1: 200};
    var halfWidth = _p4._0;
@@ -7028,6 +7030,7 @@ Elm.Game.Model.make = function (_elm) {
                                    ,Right: Right
                                    ,Player: Player
                                    ,Ground: Ground
+                                   ,Camera: Camera
                                    ,Game: Game
                                    ,player: player
                                    ,defaultGame: defaultGame
@@ -7056,7 +7059,7 @@ Elm.Game.Update.make = function (_elm) {
       if (_p0.ctor === "Just") {
             return _p0._0;
          } else {
-            return _U.crashCase("Game.Update",{start: {line: 116,column: 3},end: {line: 118,column: 53}},_p0)("error: fromJust Nothing");
+            return _U.crashCase("Game.Update",{start: {line: 125,column: 3},end: {line: 127,column: 53}},_p0)("error: fromJust Nothing");
          }
    };
    var isColliding = F2(function (ground,player) {    return A2($Collision2D.axisAlignedBoundingBox,player,ground);});
@@ -7108,13 +7111,16 @@ Elm.Game.Update.make = function (_elm) {
       {ctor: "_Tuple2",_0: oldX,_1: oldY},
       collisionUpdate(A2(physicsUpdate,dt,A2(jumpUpdate,keys,A2(walkUpdate,keys,A2(gravityUpdate,dt,player))))));
    });
+   var updateCamera = F2(function (camera,player) {    return _U.update(camera,{x: player.x,y: player.y});});
    var update = F2(function (_p11,game) {
       var _p12 = _p11;
+      var player$ = A4(updatePlayer,_p12._0,_p12._1,game.player,game);
       var newState = $Game$Model.Play;
-      return _U.update(game,{state: newState,player: A4(updatePlayer,_p12._0,_p12._1,game.player,game)});
+      return _U.update(game,{state: newState,player: player$,camera: A2(updateCamera,game.camera,player$)});
    });
    return _elm.Game.Update.values = {_op: _op
                                     ,update: update
+                                    ,updateCamera: updateCamera
                                     ,updatePlayer: updatePlayer
                                     ,gravityUpdate: gravityUpdate
                                     ,walkUpdate: walkUpdate
@@ -7145,21 +7151,23 @@ Elm.Game.View.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var groundToForm = function (g) {
+   var groundToForm = F2(function (camera,g) {
       var groundSrc = "img/ground.png";
-      return A2($Graphics$Collage.move,{ctor: "_Tuple2",_0: g.x,_1: g.y},$Graphics$Collage.toForm(A3($Graphics$Element.image,32,32,groundSrc)));
-   };
+      return A2($Graphics$Collage.move,
+      {ctor: "_Tuple2",_0: g.x - camera.x,_1: g.y - camera.y},
+      $Graphics$Collage.toForm(A3($Graphics$Element.image,32,32,groundSrc)));
+   });
    var view = F2(function (_p0,game) {
       var _p1 = _p0;
       var _p5 = _p1._0;
       var _p4 = _p1._1;
-      var groundForms = A2($List.map,groundToForm,game.grounds);
+      var groundForms = A2($List.map,function (g) {    return A2(groundToForm,game.camera,g);},game.grounds);
       var playerSrc = "img/playerstandleft.png";
       var playerImage = A3($Graphics$Element.image,32,32,playerSrc);
       var player = game.player;
       var verb = _U.cmp(player.vx,0) > 0 ? "walk" : "stand";
       var dir = function () {    var _p2 = player.dir;if (_p2.ctor === "Left") {    return "left";} else {    return "right";}}();
-      var position = {ctor: "_Tuple2",_0: player.x,_1: player.y};
+      var position = {ctor: "_Tuple2",_0: player.x - game.camera.x,_1: player.y - game.camera.y};
       var playerForm = _U.list([A2($Graphics$Collage.move,position,$Graphics$Collage.toForm(playerImage))]);
       var _p3 = {ctor: "_Tuple2",_0: $Basics.toFloat(_p5),_1: $Basics.toFloat(_p4)};
       var w = _p3._0;

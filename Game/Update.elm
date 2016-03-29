@@ -13,11 +13,20 @@ update (dt, keys) game =
   let
     newState =
       Model.Play
+    player' = updatePlayer dt keys game.player game
   in
     { game |
         state = newState,
-        player = updatePlayer dt keys game.player game
+        player = player',
+        camera = updateCamera game.camera player'
     }    
+
+updateCamera : Model.Camera -> Model.Player -> Model.Camera
+updateCamera camera player =
+  { camera |
+      x = player.x,
+      y = player.y
+  }
 
 updatePlayer : Time -> Input.Keys -> Model.Player -> Game -> Model.Player
 updatePlayer dt keys player game =

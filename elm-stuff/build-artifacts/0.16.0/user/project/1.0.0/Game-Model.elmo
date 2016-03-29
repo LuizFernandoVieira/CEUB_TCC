@@ -15,7 +15,8 @@ Elm.Game.Model.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var Game = F3(function (a,b,c) {    return {state: a,player: b,grounds: c};});
+   var Game = F4(function (a,b,c,d) {    return {state: a,player: b,grounds: c,camera: d};});
+   var Camera = F2(function (a,b) {    return {x: a,y: b};});
    var Ground = F3(function (a,b,c) {    return {x: a,y: b,rect: c};});
    var buildGround = function (coordinates) {
       return A2($List.map,
@@ -34,9 +35,10 @@ Elm.Game.Model.make = function (_elm) {
    var Pause = {ctor: "Pause"};
    var Play = {ctor: "Play"};
    var defaultGame = function () {
+      var camera$ = A2(Camera,0,0);
       var grounds$ = buildGround($Game$Level.loadLevel(1));
       var playerRect = A4($Collision2D.rectangle,0,250,32,32);
-      return {state: Play,player: A7(Player,0,250,0,0,Left,playerRect,false),grounds: grounds$};
+      return {state: Play,player: A7(Player,0,250,0,0,Left,playerRect,false),grounds: grounds$,camera: camera$};
    }();
    var _p4 = {ctor: "_Tuple2",_0: 300,_1: 200};
    var halfWidth = _p4._0;
@@ -55,6 +57,7 @@ Elm.Game.Model.make = function (_elm) {
                                    ,Right: Right
                                    ,Player: Player
                                    ,Ground: Ground
+                                   ,Camera: Camera
                                    ,Game: Game
                                    ,player: player
                                    ,defaultGame: defaultGame

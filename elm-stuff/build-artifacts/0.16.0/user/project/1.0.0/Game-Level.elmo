@@ -34,7 +34,7 @@ Elm.Game.Level.make = function (_elm) {
       var indexedlines = withIndex(splitted);
       return calculateCoordinates($List.concat(A2($List.map,parseLineToTuples,indexedlines)));
    };
-   var level = "\n  *****************\n  *                         *\n  *                         *\n  *                     *\n  *                         *\n  *     ******              *\n  *                         *\n  *                         *\n  *                         *\n  *                         *\n  *              *****      *\n  *                         *          \n  *                         *\n  *                         *\n  *      ****               *\n  *                         *\n  ***       *****************\n";
+   var level = "\n  *****************\n  *                         *\n  *                         *\n  *                     *\n  *                         *\n  *                         *\n  *                         *\n  *                         *\n  *                         *\n  *                         *\n  *              *****      *\n  *                         *          \n  *                         *\n  *                         *\n  *      ****               *\n  *                         *\n  ***       *****************\n";
    var loadLevel = function (n) {    var level$ = level;return asciiToCoordinates(level$);};
    return _elm.Game.Level.values = {_op: _op
                                    ,loadLevel: loadLevel

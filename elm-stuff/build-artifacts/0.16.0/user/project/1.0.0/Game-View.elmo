@@ -17,21 +17,23 @@ Elm.Game.View.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var groundToForm = function (g) {
+   var groundToForm = F2(function (camera,g) {
       var groundSrc = "img/ground.png";
-      return A2($Graphics$Collage.move,{ctor: "_Tuple2",_0: g.x,_1: g.y},$Graphics$Collage.toForm(A3($Graphics$Element.image,32,32,groundSrc)));
-   };
+      return A2($Graphics$Collage.move,
+      {ctor: "_Tuple2",_0: g.x - camera.x,_1: g.y - camera.y},
+      $Graphics$Collage.toForm(A3($Graphics$Element.image,32,32,groundSrc)));
+   });
    var view = F2(function (_p0,game) {
       var _p1 = _p0;
       var _p5 = _p1._0;
       var _p4 = _p1._1;
-      var groundForms = A2($List.map,groundToForm,game.grounds);
+      var groundForms = A2($List.map,function (g) {    return A2(groundToForm,game.camera,g);},game.grounds);
       var playerSrc = "img/playerstandleft.png";
       var playerImage = A3($Graphics$Element.image,32,32,playerSrc);
       var player = game.player;
       var verb = _U.cmp(player.vx,0) > 0 ? "walk" : "stand";
       var dir = function () {    var _p2 = player.dir;if (_p2.ctor === "Left") {    return "left";} else {    return "right";}}();
-      var position = {ctor: "_Tuple2",_0: player.x,_1: player.y};
+      var position = {ctor: "_Tuple2",_0: player.x - game.camera.x,_1: player.y - game.camera.y};
       var playerForm = _U.list([A2($Graphics$Collage.move,position,$Graphics$Collage.toForm(playerImage))]);
       var _p3 = {ctor: "_Tuple2",_0: $Basics.toFloat(_p5),_1: $Basics.toFloat(_p4)};
       var w = _p3._0;
